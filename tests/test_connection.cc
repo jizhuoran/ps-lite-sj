@@ -15,18 +15,21 @@ public:
         int work_id = req_meta.sender - 9;
 
 
-        KVPairs<Val> res;
+        
         if (req_meta.push) { // push
-            CHECK_EQ(n, req_data.lens.size());
+            
         } else {            // pull
-            res.keys = req_data.keys;
-            res.lens.resize(res.keys.size());
+            
         }
 
         size_t cur_idx = 0;
         for (size_t i = 0;i < n; ++i) {
+
             Key key = req_data.keys[i];
             if(req_meta.push){ //push
+                
+                KVPairs<Val> res;
+                CHECK_EQ(n, req_data.lens.size());
                 int len = req_data.lens[i];
                 if(grad[work_id].size() == 0){//第一次push，开辟空间
                     grad[work_id] = vector<float>(len, 0);
@@ -35,26 +38,44 @@ public:
                 ticks[work_id]++;
 
                 for(int idx = 0; idx < len; ++idx){
-                    grad[work_id][idx] = req_data.vals[cur_idx++];
+                    grad[work_id][idx] += req_data.vals[cur_idx++];
 #ifdef DEBUG
                     std::cout << grad[work_id][idx] << " ";
 #endif
                 }
+
+                server->Response(req_meta, res);
             }
             else{ // pull
                 
+                
                 if(ticks[work_id] > queue.size()) {
-                    queue
+                    queue.push(std::vector<KVMeta>);
                 }
 
+                queue[ticks[work_id] - last_tick].push_back(req_meta);
 
-                res.lens[i] = grad[work_id].size();
-                for(int idx = 0; idx < res.lens[i]; ++idx){
-                    res.vals.push_back(grad[work_id][idx]);
+                if(queue[ticks[work_id] - last_tick].size() == NumWorkers()) {
+                    for(int queue_tick_itr = 0; queue_tick_itr < queue[ticks[work_id] - last_tick].size(); ++queue_tick_itr) {
+
+                        KVPairs<Val> res;
+                        res.keys = req_data.keys;
+                        res.lens.resize(res.keys.size());
+
+                        res.lens[i] = grad[work_id].size();
+                        for(int idx = 0; idx < res.lens[i]; ++idx){
+                            res.vals.push_back(grad[work_id][idx]);
+                            grad[work_id][idx] = 0;
+                        }
+
+                        server->Response(queue[ticks[work_id] - last_tick][queue_tick_itr], res);
+                    }
                 }
+
+                
             }
         }
-        server->Response(req_meta, res);
+        
     }
 private:
     std::vector<std::vector<float> > grad = std::vector<std::vector<float> >(NumWorkers());
