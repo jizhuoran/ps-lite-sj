@@ -38,7 +38,11 @@ public:
                 ticks[work_id]++;
 
                 for(int idx = 0; idx < len; ++idx){
-                    grad[work_id][idx] += req_data.vals[cur_idx++];
+
+                    for(int work_itr = 0; work_itr < NumWorkers(); ++work_itr) {
+                        grad[work_itr][idx] += req_data.vals[cur_idx++];
+                    }
+                    
 #ifdef DEBUG
                     std::cout << grad[work_id][idx] << " ";
 #endif
@@ -50,7 +54,7 @@ public:
                 
                 
                 if(ticks[work_id] > queue.size()) {
-                    queue.push(std::vector<KVMeta>);
+                    queue.push_back(std::vector<KVMeta>());
                 }
 
                 queue[ticks[work_id] - last_tick].push_back(req_meta);
@@ -80,7 +84,7 @@ public:
 private:
     std::vector<std::vector<float> > grad = std::vector<std::vector<float> >(NumWorkers());
     std::vector<int> ticks =  std::vector<int>(NumWorkers(), 0);
-    std::queue<std::vector<KVMeta> > queue;
+    std::vector<std::vector<KVMeta> > queue;
     int last_tick = 1;
 };
 
