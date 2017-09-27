@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.7)
 project(pslite C CXX)
 
 if(NOT MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
@@ -52,14 +52,22 @@ endif()
 list(APPEND SOURCE ${proto_srcs}) 
 add_library(pslite ${SOURCE}) 
 
+
 target_link_libraries(pslite ${pslite_LINKER_LIBS})
+
+target_link_libraries(pslite ${pslite_LINKER_LIBS} build/libpslite.a)
+
+
+
 
 list(APPEND pslite_LINKER_LIBS_L_RELEASE ${Protobuf_LIBRARY})
 list(APPEND pslite_LINKER_LIBS_L_DEBUG ${Protobuf_LIBRARY_DEBUG})
 list(APPEND pslite_INCLUDE_DIR_L "${PROJECT_SOURCE_DIR}/include")
 list(APPEND pslite_INCLUDE_DIR_L ${PROTOBUF_INCLUDE_DIR})
 
-set(pslite_LINKER_LIBS ${pslite_LINKER_LIBS_L} PARENT_SCOPE)
-set(pslite_LINKER_LIBS_RELEASE ${pslite_LINKER_LIBS_L_RELEASE} PARENT_SCOPE)
-set(pslite_LINKER_LIBS_DEBUG ${pslite_LINKER_LIBS_L_DEBUG} PARENT_SCOPE)
+set(pslite_LINKER_LIBS ${pslite_LINKER_LIBS_L}  build/libpslite.a PARENT_SCOPE)
+set(pslite_LINKER_LIBS_RELEASE ${pslite_LINKER_LIBS_L_RELEASE}  build/libpslite.a PARENT_SCOPE)
+set(pslite_LINKER_LIBS_DEBUG ${pslite_LINKER_LIBS_L_DEBUG}  build/libpslite.a PARENT_SCOPE)
 set(pslite_INCLUDE_DIR ${pslite_INCLUDE_DIR_L} PARENT_SCOPE)
+
+add_executable(ps-server tests/ps-caffe-server.cc )
