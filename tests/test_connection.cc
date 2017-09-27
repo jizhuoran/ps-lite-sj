@@ -39,9 +39,11 @@ public:
 
                 for(int idx = 0; idx < len; ++idx){
 
+                    /*
                     for(int work_itr = 0; work_itr < NumWorkers(); ++work_itr) {
                         grad[work_itr][idx] += req_data.vals[cur_idx++];
-                    }
+                    }*/
+                    grad[work_id][idx] == req_data.vals[cur_idx++];
                     
 #ifdef DEBUG
                     std::cout << grad[work_id][idx] << " ";
