@@ -8,7 +8,7 @@ using namespace ps;
 #define MAX_DIFF 2
 int method = 5;
 
-// #define DEBUG
+#define DEBUG
 
 double gamma_mon = 0.9;
 
@@ -230,6 +230,7 @@ public:
 
                         double var = 0;
                         double thred = 0;
+                        double ADB = 0;
 
                         int count = 0;
 
@@ -246,6 +247,7 @@ public:
                             double x2 = 0;
                             double x = 0;
 
+
                             for (int j = 0; j < NumWorkers(); ++j) {
 
                                 if(ticks[j] == current_tick - 1) {
@@ -254,14 +256,16 @@ public:
                                 }
                             }
 
-                            var += (x2 / count);
+                            ADB += (sqrt((x2 / count) - ((x / count) * (x / count))) / 8 + x / 64 * 2.0639) * (sqrt((x2 / count) - ((x / count) * (x / count))) / 8 + x / 64 * 2.0639);
+
+                            var += (x2 / count) - ((x / count) * (x / count));
                             thred += ((x / count) * (x / count));
                         }
 
 #ifdef DEBUG
-                        std::cout << "For tick " << current_tick << "  " << ((var - thred) / (64*count)) << " " << thred / count << std::endl;
+                        std::cout << "For tick " << current_tick << "  " << (var / (64*count)) << " " << thred / count << "  " << ADB << std::endl;
 #endif
-                        if (((var - thred) / (64*count)) > thred / count) {
+                        if ((var / (64*count)) > thred / count && ADB > var/64) {
 
                             if (count == NumWorkers()) {
                                 std::cout << "Force to sync " << current_tick << std::endl;
