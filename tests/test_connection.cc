@@ -1,11 +1,17 @@
 #include <iostream>
+#include <math.h>
 #include "ps/ps.h"
 using namespace std;
 using namespace ps;
 #define ASYNC 1
 #define SYNC 2
 #define MAX_DIFF 2
-int method = 3;
+int method = 5;
+
+// #define DEBUG
+
+double gamma_mon = 0.9;
+
 template <class Val>
 class KVServerDefaultHandle1 {      //functor，用与处理server收到的来自worker的请求
 public:
@@ -15,8 +21,9 @@ public:
     void operator() (const KVMeta& req_meta, const KVPairs<Val>& req_data, KVServer<Val>* server) {
         size_t n = req_data.keys.size();
         int work_id = (req_meta.sender - 9)/2;
-        
+#ifdef DEBUG
         std::cout << "worker id is " << work_id << "where it is push" << req_meta.push << std::endl;
+#endif
         if (req_meta.push) { // push
             
         } else {            // pull
@@ -39,8 +46,14 @@ public:
                     }
                 }
 
+                if(momentum.size() == 0){//第一次push，开辟空间
+                    momentum = vector<float>(len, 0);
+                }
 
-                ticks[work_id]++;
+                if (method != 5) {
+                    ticks[work_id]++;
+                }
+                
                 
                 for(int work_itr = 0; work_itr < NumWorkers(); ++work_itr) {
                     cur_idx = 0;
@@ -181,6 +194,120 @@ public:
                     server->Response(req_meta, res);
 
 
+                } else if (method == 5){
+
+                    // push_in()
+
+                    if (ticks[work_id] < current_tick - 1) {
+
+                        double exp = 1.0 * (current_tick - ticks[work_id]);
+                        double momentum_cons = pow(gamma_mon, exp);
+
+                        KVPairs<Val> res;
+                        res.keys = req_data.keys;
+                        res.lens.resize(res.keys.size());
+        
+                        res.lens[i] = grad[work_id].size();
+                        for(int idx = 0; idx < res.lens[i]; ++idx){
+                            res.vals.push_back(grad[current_tick - 1][idx] - grad[ticks[work_id]][idx]);
+
+                            momentum[idx] += grad[work_id][idx] * momentum_cons;
+
+                            grad[work_id][idx] = 0;
+                        }
+
+                        ticks[work_id] = current_tick - 1;
+
+                        server->Response(req_meta, res);
+
+                        return;
+
+                    } else if(ticks[work_id] == current_tick - 1) {
+
+
+                        meta_vec.push_back(req_meta);
+                        data_vec.push_back(req_data);
+
+                        double var = 0;
+                        double thred = 0;
+
+                        int count = 0;
+
+                        for (int j = 0; j < NumWorkers(); ++j) {
+
+                            if(ticks[j] == current_tick - 1) {
+                                count++;
+                            }
+                        }
+
+
+                        for(int idx = 0; idx < grad[work_id].size(); ++idx){
+
+                            double x2 = 0;
+                            double x = 0;
+
+                            for (int j = 0; j < NumWorkers(); ++j) {
+
+                                if(ticks[j] == current_tick - 1) {
+                                    x2 += (grad[j][idx] * grad[j][idx]);
+                                    x += grad[j][idx];
+                                }
+                            }
+
+                            var += (x2 / count);
+                            thred += ((x / count) * (x / count));
+                        }
+
+#ifdef DEBUG
+                        std::cout << "For tick " << current_tick << "  " << ((var - thred) / (64*count)) << " " << thred / count << std::endl;
+#endif
+                        if (((var - thred) / (64*count)) > thred / count) {
+
+                            if (count == NumWorkers()) {
+                                std::cout << "Force to sync " << current_tick << std::endl;
+                            } else {
+                                return;
+                            }
+
+                        }
+
+                        KVPairs<Val> res;
+                        res.keys = data_vec[0].keys;
+                        res.lens.resize(data_vec[0].keys.size());
+                        res.lens[i] = grad[work_id].size();
+
+
+                        for(int idx = 0; idx < res.lens[i]; ++idx){
+                            res.vals.push_back(momentum[idx]);
+                            momentum[idx] = 0;
+                        }
+
+                        for (int j = 0; j < NumWorkers(); ++j) {
+                            if(ticks[j] == current_tick - 1) {
+                                for(int idx = 0; idx < res.lens[i]; ++idx){
+                                    res.vals[idx] += grad[work_id][idx];
+                                    grad[work_id][idx] = 0;
+                                }
+                            }
+
+                            ticks[j] = current_tick;
+                        }
+                        
+                        current_tick++;
+
+                        for(int vec_itr = 0; vec_itr < meta_vec.size(); ++vec_itr) {
+                            server->Response(meta_vec[vec_itr], res);
+                        }
+
+                        meta_vec.clear();
+
+                    } else {
+
+
+                        std::cout << ticks[work_id] <<"   " << current_tick - 1 << std::endl;
+                        std::cout << "DEBUG, should not print this one" << std::endl;
+                    }
+
                 }
             }
         }
@@ -191,10 +318,14 @@ private:
     std::vector<int> ticks =  std::vector<int>(NumWorkers(), 0);
     std::vector<std::vector<KVMeta> > meta_queue;
     std::vector<std::vector<KVPairs<Val> > > data_queue;
+    std::vector<std::vector<float> > grad_history;
+    std::vector<float> momentum;
+
 
     std::vector<KVMeta> meta_vec;
     std::vector<KVPairs<Val> > data_vec;
     int last_tick = 1;
+    int current_tick = 2;
 };
 
 void StartServer() {
