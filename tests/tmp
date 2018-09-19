@@ -1,0 +1,123 @@
+num of workers[4]
+num of servers[1]
+before this
+before this
+before this
+before this
+before this
+after this
+after this
+after this
+after this
+worker id is 0where it is push1
+worker id is 2where it is push1
+worker id is 0where it is push0
+worker id is 1where it is push1
+worker id is 2where it is push0
+worker id is 1where it is push0
+worker id is 3where it is push1
+The new learning rate is0 / 0 = 0
+worker id is 3where it is push0
+The new learning rate is1.16804e-06 / 1.79788e-06 = 0.107117
+The new learning rate is1.14728e-06 / 1.79788e-06 = 0.106161
+The new learning rate is1.4069e-06 / 9.38784e-07 = 0.11806
+worker id is 0where it is push1
+worker id is 0where it is push0
+For tick 2  8.12929e-05 0.0535983  -nan
+The constant alpha is 0.998483
+worker id is 2where it is push1
+worker id is 2where it is push0
+For tick 3  0.000170782 0.0810281  -nan
+The constant alpha is 0.997892
+worker id is 1where it is push1
+The new learning rate is0.0021014 / 0.00356137 = 0.757587
+worker id is 3where it is push1
+worker id is 1where it is push0
+For tick 4  0.000360012 0.173901  0.0135964
+The constant alpha is 0.99793
+worker id is 3where it is push0
+For tick 5  0.000691406 0.0841019  0.00920222
+The constant alpha is 0.991779
+The new learning rate is4.13568e-05 / 7.46025e-05 = 0.486685
+The new learning rate is0.00035989 / 0.00072296 = 0.661295
+The new learning rate is0.000385903 / 0.000560555 = 0.764336
+worker id is 0where it is push1
+worker id is 0where it is push0
+For tick 6  0.0005996 0.106614  0.0107518
+The constant alpha is 0.994376
+worker id is 2where it is push1
+worker id is 2where it is push0
+For tick 7  0.000545695 0.101728  -nan
+The constant alpha is 0.994636
+worker id is 1where it is push1
+worker id is 1where it is push0
+The new learning rate is0.000213377 / 0.000364421 = 0.677826
+For tick 8  0.000444307 0.13053  0.0122341
+The constant alpha is 0.996596
+worker id is 3where it is push1
+worker id is 3where it is push0
+The new learning rate is0.000208639 / 0.000261511 = 0.759692
+For tick 9  0.000660237 0.122328  0.0133625
+The constant alpha is 0.994603
+The new learning rate is8.96496e-05 / 0.000201582 = 0.54522
+The new learning rate is0.000255186 / 0.000422936 = 0.698561
+worker id is 0where it is push1
+worker id is 0where it is push0
+For tick 10  0.000630019 0.143444  0.014676
+The constant alpha is 0.995608
+worker id is 2where it is push1
+worker id is 2where it is push0
+For tick 11  0.000704418 0.131954  0.0138457
+The constant alpha is 0.994662
+worker id is 1where it is push1
+worker id is 1where it is push0
+The new learning rate is0.000208212 / 0.000451697 = 0.614331
+For tick 12  0.000675336 0.146193  0.0146598
+The constant alpha is 0.995381
+worker id is 3where it is push1
+worker id is 3where it is push0
+The new learning rate is0.000384462 / 0.000499873 = 0.800566
+For tick 13  0.0007432 0.126365  0.0137347
+The constant alpha is 0.994119
+The new learning rate is0.000255682 / 0.000494765 = 0.655659
+The new learning rate is0.000265673 / 0.000335284 = 0.781246
+worker id is 0where it is push1
+worker id is 0where it is push0
+For tick 14  0.000678853 0.141249  0.0143356
+The constant alpha is 0.995194
+worker id is 2where it is push1
+worker id is 2where it is push0
+For tick 15  0.00070832 0.142859  0.0140995
+The constant alpha is 0.995042
+worker id is 1where it is push1
+worker id is 1where it is push0
+The new learning rate is0.000123644 / 0.000243365 = 0.600079
+For tick 16  0.000713415 0.150835  0.0145755
+The constant alpha is 0.99527
+The new learning rate is0.000163956 / 0.000232638 = 0.702065
+worker id is 3where it is push1
+worker id is 3where it is push0
+For tick 17  0.000792479 0.135733  0.0139626
+The constant alpha is 0.994161
+The new learning rate is0.000114501 / 0.000228579 = 0.590316
+worker id is 0where it is push1
+worker id is 0where it is push0
+The new learning rate is0.000177372 / 0.000242826 = 0.719293
+For tick 18  0.00074347 0.152526  0.0147759
+The constant alpha is 0.995126
+worker id is 2where it is push1
+worker id is 2where it is push0
+For tick 19  0.000758035 0.167121  0.0152288
+The constant alpha is 0.995464
+worker id is 1where it is push1
+worker id is 1where it is push0
+The new learning rate is0.000157748 / 0.000256132 = 0.665544
+For tick 20  0.000819996 0.166878  0.0153188
+The constant alpha is 0.995086
+The new learning rate is0.000156034 / 0.000292722 = 0.630328
+worker id is 3where it is push1
+worker id is 3where it is push0
+For tick 21  0.000892528 0.155368  0.014886
+The new learning rate is0.00016902 / 0.000301077 = 0.649165
+The constant alpha is 0.994255
+The new learning rate is0.000219456 / 0.000333701 = 0.711341

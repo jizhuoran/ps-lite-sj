@@ -8,7 +8,7 @@ using namespace ps;
 #define MAX_DIFF 2
 int method = 5;
 
-#define DEBUG
+// #define DEBUG
 
 double gamma_mon = 0.9;
 
@@ -295,6 +295,14 @@ public:
                             }
 
                             ticks[j] = current_tick;
+                        }
+
+#ifdef DEBUG
+                        std::cout << "The constant alpha is " << (1-((var)/(64 * thred))) << std::endl;
+#endif
+
+                        for(int idx = 0; idx < res.lens[i]; ++idx){
+                            res.vals[idx] *= (1-((var)/(64 * thred)));
                         }
                         
                         current_tick++;
