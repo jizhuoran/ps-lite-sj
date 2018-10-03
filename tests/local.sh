@@ -2,8 +2,8 @@
 # set -x
 
 
-pkill -9 caffe
-pkill -9 test_connection
+# pkill -9 caffe
+# pkill -9 test_connection
 
 if [ $# -lt 3 ]; then
     echo "usage: $0 num_servers num_workers bin [args..]"
@@ -20,7 +20,7 @@ arg="$@"
 
 # start the scheduler
 export DMLC_PS_ROOT_URI='127.0.0.1'
-export DMLC_PS_ROOT_PORT=8000
+export DMLC_PS_ROOT_PORT=7640
 export DMLC_ROLE='scheduler'
 /home/zrji/distributed_caffe/ps-lite-sj/tests/test_connection &
 

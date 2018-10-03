@@ -6,7 +6,7 @@ using namespace ps;
 #define ASYNC 1
 #define SYNC 2
 #define MAX_DIFF 2
-int method = 5;
+int method = 2;
 
 // #define DEBUG
 
@@ -78,34 +78,34 @@ public:
     
                     server->Response(req_meta, res);
                 } else if (method == 2){
-                    if(ticks[work_id] > meta_queue.size()) {
-                        meta_queue.push_back(std::vector<KVMeta>());
-                        data_queue.push_back(std::vector<KVPairs<Val> >());
-                    }
-    
-                    meta_queue[ticks[work_id] - last_tick].push_back(req_meta);
-    
-                    data_queue[ticks[work_id] - last_tick].push_back(req_data);
-    
-                    if(meta_queue[ticks[work_id] - last_tick].size() == NumWorkers()) {
-                        for(int meta_queue_tick_itr = 0; meta_queue_tick_itr < meta_queue[ticks[work_id] - last_tick].size(); ++meta_queue_tick_itr) {
-    
+
+                    meta_vec.push_back(req_meta);
+                    data_vec.push_back(req_data);
+
+                    if(meta_vec.size() == NumWorkers()) {
+
+                        for(int work_itr = 0; work_itr < NumWorkers(); ++work_itr) {
+
                             KVPairs<Val> res;
-                            res.keys = data_queue[ticks[work_id] - last_tick][meta_queue_tick_itr].keys;
-                            res.lens.resize(data_queue[ticks[work_id] - last_tick][meta_queue_tick_itr].keys.size());
-    
+                            res.keys = data_vec[work_itr].keys;
+                            res.lens.resize(data_vec[work_itr].keys.size());
                             res.lens[i] = grad[work_id].size();
-                            //std::cout << "the i is hahaha" << i << std::endl;
+
                             for(int idx = 0; idx < res.lens[i]; ++idx){
-    
-                                int recv_id = (meta_queue[ticks[work_id] - last_tick][meta_queue_tick_itr].sender - 9)/2;
-                                res.vals.push_back(grad[recv_id][idx]);
-                                grad[recv_id][idx] = 0;
-                                
+                                res.vals.push_back(grad[work_itr][idx] / NumWorkers());
+                                grad[work_itr][idx] = 0;
                             }
-                            server->Response(meta_queue[ticks[work_id] - last_tick][meta_queue_tick_itr], res);
+
+                            server->Response(meta_vec[work_itr], res);
+                      
                         }
+
+                        data_vec.clear();
+                        meta_vec.clear();
                     }
+
+                    
+
                 }else if (method == 3) {
 
                     for(int vec_itr = 0; vec_itr < meta_vec.size(); ++vec_itr) {
@@ -311,6 +311,7 @@ public:
                             server->Response(meta_vec[vec_itr], res);
                         }
 
+                        data_vec.clear();
                         meta_vec.clear();
 
                     } else {
