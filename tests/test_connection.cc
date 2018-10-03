@@ -83,29 +83,37 @@ public:
                     data_vec.push_back(req_data);
 
                     if(meta_vec.size() == NumWorkers()) {
+			
+			KVPairs<Val> res;
+                        res.keys = req_data.keys;
+                        res.lens.resize(res.keys.size());
+
+                        res.lens[0] = grad[work_id].size();
+
+
+			for(int idx = 0; idx < res.lens[0]; ++idx){
+                        	res.vals.push_back(0);
+                        }
 
                         for(int work_itr = 0; work_itr < NumWorkers(); ++work_itr) {
+                            
+                            
+                            for(int idx = 0; idx < res.lens[0]; ++idx){
 
-                            KVPairs<Val> res;
-                            res.keys = data_vec[work_itr].keys;
-                            res.lens.resize(data_vec[work_itr].keys.size());
-                            res.lens[i] = grad[work_id].size();
-
-                            for(int idx = 0; idx < res.lens[i]; ++idx){
-                                res.vals.push_back(grad[work_itr][idx] / NumWorkers());
-                                grad[work_itr][idx] = 0;
+                                res.vals[idx] = (grad[work_itr][idx] / NumWorkers());
+				grad[work_itr][idx] = 0;
                             }
 
                             server->Response(meta_vec[work_itr], res);
-                      
+                            
                         }
 
                         data_vec.clear();
                         meta_vec.clear();
-                    }
 
+		}
                     
-
+                            
                 }else if (method == 3) {
 
                     for(int vec_itr = 0; vec_itr < meta_vec.size(); ++vec_itr) {
