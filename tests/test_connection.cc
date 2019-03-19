@@ -72,7 +72,7 @@ public:
     
                     res.lens[i] = grad[work_id].size();
                     for(int idx = 0; idx < res.lens[i]; ++idx){
-                        res.vals.push_back(grad[work_id][idx]);
+                        res.vals.push_back(grad[work_id][idx] / NumWorkers());
                         grad[work_id][idx] = 0;
                     }
     
